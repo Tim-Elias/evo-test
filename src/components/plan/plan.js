@@ -207,8 +207,10 @@ class Screen extends React.Component {
         this.props.set_group_arr(group_arr)
     }
 
+    // установить новый план
     set_plan = (index) => {
 
+        //получить изображение и вычислить размеры
         const img = new Image();
         img.src = planes[index];
         img.onload = () => {
@@ -216,25 +218,28 @@ class Screen extends React.Component {
                 h: img.height,
                 w: img.width
             }
-            this.props.set_plan_size(data)
+            this.props.set_plan_size(data) 
             this.props.set_plan_index(index)
-            this.set_marker()
-            this.scrollIntoView()
+            this.set_marker() // вывести маркеры
+            this.scrollIntoView() //проскролить до нужного места
         };
 
-        let arr = this.props.store.test.test_data[index].markers
+        let arr = this.props.store.test.test_data[index].markers // получить список всех маркеров для вычисления размера
 
         let left = arr.reduce((acc, el) => Math.min(acc, el.x), 100000)
         let right = arr.reduce((acc, el) => Math.max(acc, el.x), 0)
         let top = arr.reduce((acc, el) => Math.min(acc, el.y), 100000)
         let bottom = arr.reduce((acc, el) => Math.max(acc, el.y), 0)
 
-        let data_height = bottom - top;
-        let data_width = right - left;
+        let data_height = bottom - top; // расстояние от саой левой до самой правой
+        let data_width = right - left; // расстояние от саой нижней до самой верхней
 
+
+        // вычислить обтимальный масштаб
         this.props.set_scale(Math.min(this.props.store.test.height / data_height * 0.7, this.props.store.test.width / data_width * 0.8, 1))
     }
 
+    // при загрузке компонента установить первый план
     componentDidMount() {
         this.set_plan(0)
     }
@@ -260,18 +265,13 @@ class Screen extends React.Component {
 
         return (
 
-
-
             <div>
-
-                
-                    
+   
                 {/* <input value={this.props.store.test.scale} onChange={(e) => this.props.set_scale(e.target.value)}></input> */}
                 {/* <button onClick={(e) => { this.scrollIntoView() }}>scroll</button> */}
                 {/* <button onClick={(e) => { this.set_marker() }}>set marker</button> */}      
                 {/* <input value={this.props.store.test.distance} onChange={(e) => this.props.set_distance(e.target.value)}></input> */}
                 
-
                 <div className='scale_controller_button plus' style={{left: this.props.store.test.width-30}} onClick={(e) => {
                         this.props.set_scale(this.props.store.test.scale * 1.1)
                         this.set_marker()
