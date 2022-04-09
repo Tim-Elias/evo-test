@@ -43,15 +43,25 @@ class GroupMarker extends React.Component {
     render() {
 
         const colors = this.props.colors
-        const path_color = []
-        for (let i = 0; i < 8; i++) {
+        
+        colors.sort(function (a, b) {
+            if (a.color > b.color) {
+              return 1;
+            }
+            if (a.color < b.color) {
+              return -1;
+            }
+            return 0;
+          });
 
-            let l = colors.length
-            let q = i - l * Math.floor(i / l)
-            path_color.push(colors[q].color)
+          const new_colors = colors.map((el,index,arr)=>{
+            
+            let pointStart = arr.filter((c_el,c_index) => c_index < index).length / arr.length * Math.PI * 2
+            let pointEnd = pointStart + (1 / arr.length) * Math.PI * 2
 
-        }
-        path_color.sort()
+            return {...el, pointStart: pointStart, pointEnd: pointEnd}
+
+          }) 
 
         return (
             <div>
@@ -82,14 +92,15 @@ class GroupMarker extends React.Component {
 
                     <circle className="marker_circle shadow" cx="18.75" cy="18.75" r="16" fill="white" />
 
-                    <path d="M 6.25 18.75 a 12.5 12.5 0 0 1 3.75 -8.75" stroke={path_color[0]} strokeWidth="3" fill="none" />
-                    <path d="M 10 10 a 12.5 12.5 0 0 1 8.75 -3.75" stroke={path_color[1]} strokeWidth="3" fill="none" />
-                    <path d="M 18.75 6.25 a 12.5 12.5 0 0 1 8.75 3.75" stroke={path_color[2]} strokeWidth="3" fill="none" />
-                    <path d="M 27.5 10 a 12.5 12.5 0 0 1 3.75 8.75" stroke={path_color[3]} strokeWidth="3" fill="none" />
-                    <path d="M 6.25 18.75 a 12.5 12.5 0 0 0 3.75 8.75" stroke={path_color[4]} strokeWidth="3" fill="none" />
-                    <path d="M 10 27.5 a 12.5 12.5 0 0 0 8.75 3.75" stroke={path_color[5]} strokeWidth="3" fill="none" />
-                    <path d="M 18.75 31.25 a 12.5 12.5 0 0 0 8.75 -3.75" stroke={path_color[6]} strokeWidth="3" fill="none" />
-                    <path d="M 27.5 27.5 a 12.5 12.5 0 0 0 3.75 -8.75" stroke={path_color[7]} strokeWidth="3" fill="none" />
+                    {new_colors.map(el=>{
+
+                        const d = "M " + (Math.sin(el.pointStart)*12.5+18.75) + " " + (Math.cos(el.pointStart)*12.5+18.75) + " a 12.5 12.5 0 0 0 " +(Math.sin(el.pointEnd)-Math.sin(el.pointStart))*12.5 + " " + (Math.cos(el.pointEnd)-Math.cos(el.pointStart))*12.5
+console.log(d)
+                        return (
+                            <path d={d} stroke={el.color} strokeWidth="3" fill="none" />
+
+                        )
+                    })}
 
                     <circle className="group_marker_hovered_circle" cx="18.75" cy="18.75" r="11" />
 
